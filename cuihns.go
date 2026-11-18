@@ -2,7 +2,7 @@
 package main
 
 import (
-	"./hns"
+	"github.com/a-rin/gohns/hns"
 	"fmt"
 	"io/ioutil"
 	"log"

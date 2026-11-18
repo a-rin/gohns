@@ -1,0 +1,4 @@
+github.com/cbroglie/mustache v1.4.2 h1:yHvAjVmSyYwCmEIYq7kBaZ4A+Q3kSYjJheLdB2H2r9U=
+github.com/cbroglie/mustache v1.4.2/go.mod h1:Q5dS171cNzDjfoeB6S1/GBl8bUJgIa3t8i3eyL80vzc=
+github.com/s-yata/go-iconv v0.0.0-20170810082500-1effe41f875e h1:7XTPz68JQs3xxQT0d6MmXfP7OQfhgNMB0iSvqQWMf0Q=
+github.com/s-yata/go-iconv v0.0.0-20170810082500-1effe41f875e/go.mod h1:cAt1UL90y8RUqucT0PiwTBL6OYvb/iJnOYgMpVOMC8k=

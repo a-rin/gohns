@@ -1,7 +1,7 @@
 package ghns
 
 import (
-	"../config"
+	"github.com/a-rin/gohns/hns/config"
 	iconv "github.com/s-yata/go-iconv"
 	"time"
 )

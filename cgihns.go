@@ -1,8 +1,8 @@
 package main
 
 import (
-	"./hns"
-	_ "./hns/ghns"
+	"github.com/a-rin/gohns/hns"
+	_ "github.com/a-rin/gohns/hns/ghns"
 	"net/http"
 	"net/http/cgi"
 )

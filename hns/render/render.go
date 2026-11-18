@@ -1,8 +1,8 @@
 package render
 
 import (
-	"../config"
-	g "../ghns"
+	"github.com/a-rin/gohns/hns/config"
+	g "github.com/a-rin/gohns/hns/ghns"
 	"bufio"
 	"fmt"
 	mu "github.com/cbroglie/mustache"

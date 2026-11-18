@@ -1,7 +1,7 @@
 package main
 
 import (
-	"./hns"
+	"github.com/a-rin/gohns/hns"
 	"log"
 	"net/http"
 )

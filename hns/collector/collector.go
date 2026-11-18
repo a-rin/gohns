@@ -1,7 +1,7 @@
 package collector
 
 import (
-	g "../ghns"
+	g "github.com/a-rin/gohns/hns/ghns"
 	"fmt"
 	"io/ioutil"
 	"os"
