@@ -1,53 +1,26 @@
-/*
-BODY {
-margin-right: 5%;
-margin-left: 5%;
-font-size:120%;
-}
-*/
-
-H1 {
-margin-top: 0.5em;
-margin-left: 0em;
-}
-
- h3.new { margin-left: 1em; margin-top: 0.5em; }
- div.section { margin-left: 2em; margin-top: 0 }
- div.sub { margin-left: 1em; margin-top: 0 }
- div.list { margin-left: 1em }
- div.fn { margin-left: 1em; margin-top: 0 }
- div.url { margin-bottom: 0 }
-
- div.h2date {
-   font-size: 20px;
-   font-weight:bold;
- }
- div.h3new {
-   font-size: 18px;
-   margin-top: 0.5em;
-   font-weight:bold;
- }
- div.h4sub {
-   font-size: 16px;
-   margin-top: 0.5em;
- }
- div.section {
-   font-size: 16px;
- }
- div.container {
+/* No framework, no CDN and no JavaScript. */
+body {
+  margin: 0;
   background-color: #ddeeff;
- }
- body{
-  background-color:#ddeeff;
-  font-family:sans-serif;
-  font-size:16px;font-weight:normal;line-height:18px;color:#000000;
- }
- label,input,select,textarea{font-family:sans-serif;font-size:16px;}
-
-table.calendar { width:0em;}
-
-h2.date { background-color: #bbddff; }
-div.datebody {background-color: #ffffff; padding-top: 0.5em; padding-bottom:0.5em}
-h2.AdsHeader { background-color: #fffacd; }
-div.AdsBody {background-color: #ffffff; padding-top: 0.5em; padding-bottom:0.5em}
-
+  font-family: sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  color: #000;
+}
+.container {
+  max-width: 50em;
+  margin: 0 auto;
+  padding: 0 1em;
+}
+img { max-width: 100%; height: auto; }
+header h1 { margin: 0.5em 0 0; }
+header p { margin: 0 0 1em; text-align: right; }
+h2.date { background-color: #bbddff; font-size: 20px; margin: 1em 0 0; padding: 0.2em 0.4em; }
+div.datebody { background-color: #ffffff; padding: 0.5em; }
+h3.h3new { font-size: 18px; margin: 0.5em 0 0; }
+h4.h4sub { font-size: 16px; margin: 0.5em 0 0; }
+div.section { margin-left: 2em; }
+div.sub { margin-left: 1em; }
+div.fn { margin-left: 1em; }
+div.entry { margin-left: 0; }
+div.subentry { margin-left: 2em; }

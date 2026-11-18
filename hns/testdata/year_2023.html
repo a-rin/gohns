@@ -1,42 +1,31 @@
 <!--- 0:type string -->
-<!DOCTYPE HTML>
-<html><head>
-<meta http-equiv="content-type" content="text/html; charset=utf-8">
-<meta name="robots" content="noindex, nofollow" />
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
 <title>gohns sample diary</title>
 <!--- 1:type []interface {} -->
 <!-- StaticFile ice/headincl.txt-->
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-
-<!-- Bootstrap -->
-<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-<!-- link href="../bootstrap3.3.7/css/bootstrap.min.css" rel="stylesheet" -->
-
-<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-<!--[if lt IE 9]>
-  <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-<![endif]-->
-<LINK rel="stylesheet" href="ice/style.css" type="text/css">
-
+<link rel="stylesheet" href="ice/style.css">
 <!--- 2:type string -->
 </head>
 <!--- 3:type string -->
 <body>
 <div class="container">
 <!--- 4:type string -->
+<header>
 <h1>gohns sample diary</h1>
-<p align="right">Powered by gohns (Go HNF Renderer)</p>
+<p>Powered by gohns (Go HNF Renderer)</p>
+</header>
 <!--- 5:type string -->
-<div class="row"><div class="col-md-8"><h2 class="date">
-<a href="?202301#202301010" name="202301010">□</a>2023/01/01
+<main>
+<h2 class="date">
+<a href="?202301#202301010" id="202301010">□</a>2023/01/01
 </h2>
 <div class="datebody">
 <h3 class="h3new">
-<a href="?202301#202301011" name="202301011">§</a>[<a href="?title&CAT=diary">diary</a>] New Year 2023</h3>
+<a href="?202301#202301011" id="202301011">§</a>[<a href="?title&CAT=diary">diary</a>] New Year 2023</h3>
 <div class="section">
 Same month and day as 2024-01-01, to test the month-day query (?0101).<br>
 It should list both years.
@@ -44,35 +33,25 @@ It should list both years.
 </div><!-- class datebody -->
 <br>
 <h2 class="date">
-<a href="?202312#202312150" name="202312150">□</a>2023/12/15
+<a href="?202312#202312150" id="202312150">□</a>2023/12/15
 </h2>
 <div class="datebody">
 <h3 class="h3new">
-<a href="?202312#202312151" name="202312151">§</a>[<a href="?title&CAT=tech">tech</a>] Year-end maintenance</h3>
+<a href="?202312#202312151" id="202312151">§</a>[<a href="?title&CAT=tech">tech</a>] Year-end maintenance</h3>
 <div class="section">
 An entry from the previous year.
 </div><!-- class section -->
 </div><!-- class datebody -->
 <br>
-以上、2日分です。<br>
-</div><!-- col-md-8 -->
-</div><!--row-->
+<p>以上、2日分です。</p>
+</main>
 <!--- 6:type []interface {} -->
 <!-- StaticFile ice/foot.txt-->
-<div class="row">
-<div class="col-md-12">
+<footer>
 <p>&lt;サイドバーや連絡先など、サイトに合わせた内容&gt;</p>
 <p><a href="<日記のアーカイブの URL>">archives</a></p>
 <p><a href="<サイトのトップ URL>">トップへ戻る</a></p>
-</div>
-</div><!--row-->
-<hr>
-<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-<!-- Include all compiled plugins (below), or include individual files as needed -->
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-<!-- script src="../bootstrap3.3.7/js/bootstrap.min.js"></script -->
-
+</footer>
 <!--- 7:type string -->
 <!--- 8:type string -->
 <hr>TIME<br>

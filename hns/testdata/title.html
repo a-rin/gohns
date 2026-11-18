@@ -1,39 +1,50 @@
 <!--- 0:type string -->
-<!DOCTYPE HTML>
-<!--- 1:type string -->
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<title>gohns sample diary Title list</title>
+<!--- 1:type []interface {} -->
+<!-- StaticFile ice/headincl.txt-->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="ice/style.css">
 <!--- 2:type string -->
+</head>
+<!--- 3:type string -->
 <body>
 <div class="container">
-<!--- 3:type string -->
-<h1>gohns sample diary Title list</h1>
-<p align="right">Powered by gohns (Go HNF Renderer)</p>
 <!--- 4:type string -->
-<div class="row">
-<div class="span10"><a href="?202406#202406301" name="202406301">2024/06/30§1</a>: Error handling</div>
+<header>
+<h1>gohns sample diary Title list</h1>
+<p>Powered by gohns (Go HNF Renderer)</p>
+</header>
+<!--- 5:type string -->
+<main>
+<div class="entry"><a href="?202406#202406301" id="202406301">2024/06/30§1</a>: Error handling</div>
 <font color=red><br>ERROR "LINK" must have 2 param.</font><br>
-<div class="span9 offset1"><a href="?202406#202406301S1" name="202406301S1">・</a>sub section</div>
+<div class="subentry"><a href="?202406#202406301S1" id="202406301S1">・</a>sub section</div>
 <font color=red><br>ERROR "LSUB" must have 2 param. </font><br>
 <font color=red><br>ERROR BOGUS is not implemented</font><br>
 <font color=red><br>ERROR "LIMG" must have 2 param.</font><br>
-<div class="span10"><a href="?202405#202405011" name="202405011">2024/05/01§1</a>: 日本語のサンプル</div>
-<div class="span10"><a href="?202404#202404031" name="202404031">2024/04/03§1</a>: Diary only</div>
-<div class="span10"><a href="?202404#202404021" name="202404021">2024/04/02§1</a>: Tech only</div>
-<div class="span10"><a href="?202404#202404011" name="202404011">2024/04/01§1</a>: Diary section</div>
-<div class="span10"><a href="?202404#202404012" name="202404012">2024/04/01§2</a>: Tech section</div>
-<div class="span10"><a href="?202403#202403251" name="202403251">2024/03/25§1</a>: Late-month entry</div>
-<div class="span10"><a href="?202403#202403151" name="202403151">2024/03/15§1</a>: Mid-month entry</div>
-<div class="span10"><a href="?202403#202403101" name="202403101">2024/03/10§1</a>: Block commands</div>
-<div class="span10"><a href="?202403#202403011" name="202403011">2024/03/01§1</a>: Inline commands</div>
-<div class="span10"><a href="?202402#202402151" name="202402151">2024/02/15§1</a>: List sample</div>
-<div class="span10"><a href="?202401#202401021" name="202401021">2024/01/02§1</a>: <a href="https://example.com/">A heading with a link</a></div>
-<div class="span10"><a href="?202401#202401011" name="202401011">2024/01/01§1</a>: First entry</div>
-<div class="span9 offset1"><a href="?202401#202401011S1" name="202401011S1">・</a>A subsection</div>
-<div class="span10"><a href="?202401#202401012" name="202401012">2024/01/01§2</a>: Second entry</div>
-<div class="span10"><a href="?202312#202312151" name="202312151">2023/12/15§1</a>: Year-end maintenance</div>
-<div class="span10"><a href="?202301#202301011" name="202301011">2023/01/01§1</a>: New Year 2023</div>
-</div>
-<!--- 5:type string -->
+<div class="entry"><a href="?202405#202405011" id="202405011">2024/05/01§1</a>: 日本語のサンプル</div>
+<div class="entry"><a href="?202404#202404031" id="202404031">2024/04/03§1</a>: Diary only</div>
+<div class="entry"><a href="?202404#202404021" id="202404021">2024/04/02§1</a>: Tech only</div>
+<div class="entry"><a href="?202404#202404011" id="202404011">2024/04/01§1</a>: Diary section</div>
+<div class="entry"><a href="?202404#202404012" id="202404012">2024/04/01§2</a>: Tech section</div>
+<div class="entry"><a href="?202403#202403251" id="202403251">2024/03/25§1</a>: Late-month entry</div>
+<div class="entry"><a href="?202403#202403151" id="202403151">2024/03/15§1</a>: Mid-month entry</div>
+<div class="entry"><a href="?202403#202403101" id="202403101">2024/03/10§1</a>: Block commands</div>
+<div class="entry"><a href="?202403#202403011" id="202403011">2024/03/01§1</a>: Inline commands</div>
+<div class="entry"><a href="?202402#202402151" id="202402151">2024/02/15§1</a>: List sample</div>
+<div class="entry"><a href="?202401#202401021" id="202401021">2024/01/02§1</a>: <a href="https://example.com/">A heading with a link</a></div>
+<div class="entry"><a href="?202401#202401011" id="202401011">2024/01/01§1</a>: First entry</div>
+<div class="subentry"><a href="?202401#202401011S1" id="202401011S1">・</a>A subsection</div>
+<div class="entry"><a href="?202401#202401012" id="202401012">2024/01/01§2</a>: Second entry</div>
+<div class="entry"><a href="?202312#202312151" id="202312151">2023/12/15§1</a>: Year-end maintenance</div>
+<div class="entry"><a href="?202301#202301011" id="202301011">2023/01/01§1</a>: New Year 2023</div>
+</main>
 <!--- 6:type string -->
+<!--- 7:type string -->
 <hr>TIME<br>
 </div><!-- class container -->
 </body>

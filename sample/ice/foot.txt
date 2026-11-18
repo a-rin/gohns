@@ -1,14 +1,5 @@
-<div class="row">
-<div class="col-md-12">
+<footer>
 <p>&lt;サイドバーや連絡先など、サイトに合わせた内容&gt;</p>
 <p><a href="<日記のアーカイブの URL>">archives</a></p>
 <p><a href="<サイトのトップ URL>">トップへ戻る</a></p>
-</div>
-</div><!--row-->
-<hr>
-<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-<!-- Include all compiled plugins (below), or include individual files as needed -->
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-<!-- script src="../bootstrap3.3.7/js/bootstrap.min.js"></script -->
-
+</footer>
