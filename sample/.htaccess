@@ -1,0 +1,4 @@
+DirectoryIndex index.fcgi index.html
+<Files "*.json">
+ Require all denied
+</Files>
