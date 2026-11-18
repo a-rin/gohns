@@ -212,6 +212,7 @@ func (self *HtmlPartCmd) StaticFile(params ...string) {
 	GWrite("<!-- StaticFile " + params[0] + "-->\n")
 	file, err := os.Open(params[0])
 	if err == nil {
+		defer file.Close()
 		input := bufio.NewScanner(file)
 		for input.Scan() {
 			line := input.Text()
@@ -226,6 +227,7 @@ func (self *HtmlPartCmd) ConvFile(params ...string) {
 	GWrite("<!-- ConvFile " + params[0] + "-->\n")
 	file, err := os.Open(params[0])
 	if err == nil {
+		defer file.Close()
 		input := bufio.NewScanner(file)
 		for input.Scan() {
 			dCodeLine := input.Text()

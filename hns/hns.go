@@ -2,6 +2,7 @@ package hns
 
 import (
 	"bytes"
+	"log"
 	"net/http"
 	"net/url"
 	"sync"
@@ -73,10 +74,12 @@ func handle(w http.ResponseWriter, r *http.Request) {
 	var recentF = true
 	g.Write = nil
 	g.StartTime = time.Now()
-	needTerm := g.InitG()
-	if needTerm {
-		defer g.TermG()
+	if err := g.InitG(); err != nil {
+		log.Printf("gohns: %v", err)
+		http.Error(w, "gohns: cannot read the configuration", http.StatusInternalServerError)
+		return
 	}
+	defer g.TermG()
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 
 	var qStrings = map[string][]string{}

@@ -3,6 +3,7 @@ package hns_test
 import (
 	"flag"
 	"fmt"
+	"net/http"
 	"net/http/httptest"
 	"os"
 	"path/filepath"
@@ -121,4 +122,41 @@ func TestHandlerConcurrent(t *testing.T) {
 		}()
 	}
 	wg.Wait()
+}
+
+func inDir(t *testing.T, dir string) {
+	t.Helper()
+	wd, err := os.Getwd()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Chdir(dir); err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { os.Chdir(wd) })
+}
+
+// TestBadConfig expects an error page, not a panic, and not the end of the
+// process (a FastCGI server must survive a broken configuration).
+func TestBadConfig(t *testing.T) {
+	for _, c := range []struct{ name, config string }{
+		{"missing", ""},
+		{"broken json", "{"},
+		{"unknown DiaryCode", `{"DiaryCode": "no-such-code"}`},
+	} {
+		t.Run(c.name, func(t *testing.T) {
+			dir := t.TempDir()
+			if c.config != "" {
+				if err := os.WriteFile(filepath.Join(dir, "config.json"), []byte(c.config), 0o644); err != nil {
+					t.Fatal(err)
+				}
+			}
+			inDir(t, dir)
+			rec := httptest.NewRecorder()
+			hns.Handler(rec, httptest.NewRequest("GET", "/", nil))
+			if rec.Code != http.StatusInternalServerError {
+				t.Errorf("status = %d, want %d", rec.Code, http.StatusInternalServerError)
+			}
+		})
+	}
 }

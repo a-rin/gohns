@@ -1,6 +1,7 @@
 package ghns
 
 import (
+	"fmt"
 	"github.com/a-rin/gohns/hns/config"
 	iconv "github.com/s-yata/go-iconv"
 	"time"
@@ -13,18 +14,22 @@ var (
 	Write     func([]byte) (int, error)
 )
 
-func InitG() bool {
-	var ierr error
-	if Config == nil {
-		Config = config.ReadConfig()
-		if Config != nil {
-			Conv, ierr = iconv.Open("UTF8", Config.DiaryCode)
-			if ierr != nil {
-				panic(ierr)
-			}
-		}
+// InitG reads the configuration and opens the converter. Call TermG when it
+// returns nil.
+func InitG() error {
+	if Config != nil {
+		return nil
 	}
-	return Config != nil
+	config, err := config.ReadConfig()
+	if err != nil {
+		return err
+	}
+	conv, err := iconv.Open("UTF8", config.DiaryCode)
+	if err != nil {
+		return fmt.Errorf("DiaryCode %q: %w", config.DiaryCode, err)
+	}
+	Config, Conv = config, conv
+	return nil
 }
 
 func TermG() {

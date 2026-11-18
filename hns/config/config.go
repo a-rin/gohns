@@ -22,7 +22,7 @@ type PIMType struct {
 	Schedule map[string]string
 }
 
-//type HtmlBodySeqType []string
+// type HtmlBodySeqType []string
 type HtmlSeqType []interface{}
 
 type TmplType map[string]string
@@ -57,7 +57,9 @@ type ConfigPathType struct {
 	ConfigPath string
 }
 
-func ReadConfig() *ConfigType {
+// ReadConfig reads the configuration file: the one named in configpath.json,
+// or config.json when configpath.json is missing or cannot be read.
+func ReadConfig() (*ConfigType, error) {
 	var configPath string = kFN_defaultconfig
 	var config ConfigType
 
@@ -69,7 +71,7 @@ func ReadConfig() *ConfigType {
 		for dec.More() {
 			err = dec.Decode(&path)
 			if err != nil {
-				fmt.Printf("%+v\n", path)
+				log.Printf("%s: %v; using %s", kFN_configpath, err, kFN_defaultconfig)
 				break
 			}
 		}
@@ -78,19 +80,15 @@ func ReadConfig() *ConfigType {
 		}
 	}
 	file, err := os.Open(configPath)
-
 	if err != nil {
-		return nil
+		return nil, err
 	}
 	defer file.Close()
-	//  fmt.Printf("Open\n")
 	dec := json.NewDecoder(bufio.NewReader(file))
 	for dec.More() {
-		err := dec.Decode(&config)
-		if err != nil {
-			log.Fatal("Decode error" + err.Error())
+		if err := dec.Decode(&config); err != nil {
+			return nil, fmt.Errorf("%s: %w", configPath, err)
 		}
-		//    fmt.Printf("%+v\n", config)
 	}
-	return &config
+	return &config, nil
 }
