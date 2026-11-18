@@ -42,7 +42,7 @@ func CollectYear(year int) []string {
 func CollectDay(month, day int) []string {
 	files := []string{}
 	for y := g.Config.StartYear; y <= time.Now().Year(); y++ {
-		path := fmt.Sprintf("%s/%4d/d%4d%2d%2d.hnf", g.Config.DiaryDir, y, month, day)
+		path := fmt.Sprintf("%s/%d/d%04d%02d%02d.hnf", g.Config.DiaryDir, y, y, month, day)
 		info, err := os.Stat(path)
 		if (err == nil) && (info.Mode().IsRegular()) {
 			files = append(files, path)
