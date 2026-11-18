@@ -1,15 +1,20 @@
 package collector
 
 import (
-	g "github.com/a-rin/gohns/hns/ghns"
 	"fmt"
-	"io/ioutil"
+	g "github.com/a-rin/gohns/hns/ghns"
 	"os"
 	"regexp"
 	"sort"
 	"strconv"
 	"strings"
 	"time"
+)
+
+// The patterns are compiled once, not for every line of every request.
+var (
+	diaryFileName = regexp.MustCompile(`^d\d{8}\.hnf$`)
+	diaryFileDate = regexp.MustCompile(`d(\d{4})(\d{2})(\d{2})\.hnf$`)
 )
 
 func reverse(s []string) {
@@ -22,15 +27,15 @@ func CollectYear(year int) []string {
 	//  g.Write([]byte(fmt.Sprintf("func CollectYear(%d)<br>", year)))
 	files := []string{}
 	dirName := fmt.Sprintf("%s/%d", g.Config.DiaryDir, year)
-	fInfo, error := os.Stat(dirName)
-	if error != nil || !fInfo.Mode().IsDir() {
+	fInfo, err := os.Stat(dirName)
+	if err != nil || !fInfo.Mode().IsDir() {
 		return files
 	}
-	ents, error := ioutil.ReadDir(dirName)
-	if error != nil {
+	ents, err := os.ReadDir(dirName)
+	if err != nil {
 		return files
 	}
-	resp := regexp.MustCompile(`^d\d{8}\.hnf$`)
+	resp := diaryFileName
 	for _, entry := range ents {
 		if resp.MatchString(entry.Name()) {
 			files = append(files, fmt.Sprintf("%s/%s", dirName, entry.Name()))
@@ -99,7 +104,7 @@ func YMDFiles(year, month int, daySpec string, reverseF bool) []string {
 		res = dfiles
 	} else {
 		for _, fn := range dfiles {
-			subs := regexp.MustCompile(`d(\d{4})(\d{2})(\d{2})\.hnf$`).FindStringSubmatch(fn)
+			subs := diaryFileDate.FindStringSubmatch(fn)
 			if subs != nil {
 				dyear, _ := strconv.Atoi(subs[1])
 				dmonth, _ := strconv.Atoi(subs[2])

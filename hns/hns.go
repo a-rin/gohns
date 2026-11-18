@@ -17,6 +17,12 @@ import (
 	"strings"
 )
 
+// The patterns are compiled once, not for every line of every request.
+var (
+	ymQuery = regexp.MustCompile(`^(\d{4})(\d{2})(\d*|[abc])?$`)
+	mdQuery = regexp.MustCompile(`^(\d{2})(\d{2})$`)
+)
+
 type TextProcType struct {
 }
 
@@ -95,7 +101,7 @@ func handle(w http.ResponseWriter, r *http.Request) {
 	for qVar, _ := range qStrings {
 		//      g.Write([]byte(fmt.Sprintf("<!--\n%v: %v\n-->\n", qVar, qVal)))
 		if !doneCollect {
-			subs := regexp.MustCompile(`^(\d{4})(\d{2})(\d*|[abc])?$`).FindStringSubmatch(qVar)
+			subs := ymQuery.FindStringSubmatch(qVar)
 			if subs != nil {
 				y, _ := strconv.Atoi(subs[1])
 				m, _ := strconv.Atoi(subs[2])
@@ -103,7 +109,7 @@ func handle(w http.ResponseWriter, r *http.Request) {
 				recentF = false
 				doneCollect = true
 			}
-			subs = regexp.MustCompile(`^(\d{2})(\d{2})$`).FindStringSubmatch(qVar)
+			subs = mdQuery.FindStringSubmatch(qVar)
 			if subs != nil {
 				m, _ := strconv.Atoi(subs[1])
 				d, _ := strconv.Atoi(subs[2])

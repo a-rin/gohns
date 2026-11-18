@@ -1,10 +1,10 @@
 package render
 
 import (
-	"github.com/a-rin/gohns/hns/config"
-	g "github.com/a-rin/gohns/hns/ghns"
 	"bufio"
 	"fmt"
+	"github.com/a-rin/gohns/hns/config"
+	g "github.com/a-rin/gohns/hns/ghns"
 	mu "github.com/cbroglie/mustache"
 	"os"
 	"reflect"
@@ -12,6 +12,20 @@ import (
 	"strconv"
 	"strings"
 	"time"
+)
+
+// The patterns are compiled once, not for every line of every request.
+var (
+	fileNameDate  = regexp.MustCompile(`d(\d{4})(\d{2})(\d{2})\D`)
+	trailingSpace = regexp.MustCompile(`(.*)\s+$`)
+	blankLine     = regexp.MustCompile(`^\s*$`)
+	okLine        = regexp.MustCompile(`^OK`)
+	cmdLine       = regexp.MustCompile(`^(\/?[A-Z]+)(?:\s+(\S.*))?$`)
+	commentLine   = regexp.MustCompile(`^\!(.*)$`)
+	tildeLine     = regexp.MustCompile(`(.*)~$`)
+	twoParams     = regexp.MustCompile(`^(\S+)\s+(\S.*)$`)
+	imgParams     = regexp.MustCompile(`^(\S+)(?:\s+(\S.*))?$`)
+	limgParams    = regexp.MustCompile(`^(\S+)(?:\s+(\S+))(?:\s+(\S.*))?$`)
 )
 
 type hnfState int
@@ -67,8 +81,7 @@ type TextProcIf interface {
 
 func FileNameToDate(fn string) DiaryDate {
 	var res DiaryDate
-	re := regexp.MustCompile(`d(\d{4})(\d{2})(\d{2})\D`)
-	subRes := re.FindStringSubmatch(fn)
+	subRes := fileNameDate.FindStringSubmatch(fn)
 	if subRes != nil {
 		res.year, res.month, res.day = subRes[1], subRes[2], subRes[3]
 	} else {
@@ -176,8 +189,7 @@ func (self *HtmlPartCmd) Diaries() {
 				line, _ := g.Conv.Conv([]byte(dCodeLine))
 
 				lineStr := string(line[:])
-				re := regexp.MustCompile(`(.*)\s+$`)
-				subRes := re.FindStringSubmatch(lineStr)
+				subRes := trailingSpace.FindStringSubmatch(lineStr)
 				if subRes != nil {
 					lineStr = subRes[1]
 				}
@@ -279,13 +291,12 @@ func (self *RenderObj) Line(line string) string {
 	if len(line) == 0 {
 		return res
 	}
-	re := regexp.MustCompile(`^\s*$`)
-	if re.MatchString(line) {
+	if blankLine.MatchString(line) {
 		return res
 	}
 	switch self.state {
 	case hsInit:
-		if regexp.MustCompile(`^OK`).MatchString(line) {
+		if okLine.MatchString(line) {
 			self.state = hsOk
 			//      GWrite("<!-- self.state = hsOk -->\n")
 			self.doc[`secno`] = "0"
@@ -293,7 +304,7 @@ func (self *RenderObj) Line(line string) string {
 			self.doc[`fnno`] = "0"
 		}
 	case hsOk:
-		subs := regexp.MustCompile(`^(\/?[A-Z]+)(?:\s+(\S.*))?$`).
+		subs := cmdLine.
 			FindStringSubmatch(line)
 		if subs != nil { // comannd
 			cmdStr := subs[1]
@@ -305,11 +316,11 @@ func (self *RenderObj) Line(line string) string {
 				return ""
 			}
 			//      if regexp.MustCompile(`^\!\#`).MatchString(line) { return "" }
-			subs := regexp.MustCompile(`^\!(.*)$`).FindStringSubmatch(line)
+			subs := commentLine.FindStringSubmatch(line)
 			if subs != nil { // comment
 				res = self.Comment(subs[1])
 			} else {
-				subs := regexp.MustCompile(`(.*)~$`).FindStringSubmatch(line)
+				subs := tildeLine.FindStringSubmatch(line)
 				if subs != nil { // prinLn
 					self.doc[`text`] = subs[1]
 					res, _ = mu.Render((*self.tmpl)[`TextLn`], self.doc)
@@ -464,14 +475,12 @@ func (self *RenderObj) OpenFn() string {
 }
 
 func (self *RenderObj) CloseFn() string {
-	var res string
 	if !self.fnOpen {
 		return ""
 	}
 	self.fnOpen = false
 	self.fnAry = append(self.fnAry, self.fnStr)
 	return ""
-	return res
 }
 
 func (self *RenderObj) ParamArray(param string) []string {
@@ -527,7 +536,7 @@ func (self *HnfCmd) LNEW(param string) string {
 	if !self.obj.goOutput {
 		return res
 	}
-	subs := regexp.MustCompile(`^(\S+)\s+(\S.*)$`).FindStringSubmatch(param)
+	subs := twoParams.FindStringSubmatch(param)
 	if subs != nil {
 		self.obj.doc[`uri`] = subs[1]
 		self.obj.doc[`sec`] = subs[2]
@@ -550,7 +559,7 @@ func (self *HnfCmd) SUB(param string) string {
 
 func (self *HnfCmd) LSUB(param string) string {
 	res := self.obj.CloseSub()
-	subs := regexp.MustCompile(`^(\S+)\s+(\S.*)$`).FindStringSubmatch(param)
+	subs := twoParams.FindStringSubmatch(param)
 	if subs != nil {
 		self.obj.doc[`uri`] = subs[1]
 		self.obj.doc[`subsec`] = subs[2]
@@ -578,7 +587,7 @@ func (self *HnfCmd) C_P(param string) string {
 }
 
 func (self *HnfCmd) LINK(param string) string {
-	subs := regexp.MustCompile(`^(\S+)\s+(\S.*)$`).FindStringSubmatch(param)
+	subs := twoParams.FindStringSubmatch(param)
 	if subs != nil {
 		self.obj.doc[`uri`] = subs[1]
 		self.obj.doc[`text`] = subs[2]
@@ -596,7 +605,7 @@ func (self *HnfCmd) STRIKE(param string) string {
 }
 
 func (self *HnfCmd) LSTRIKE(param string) string {
-	subs := regexp.MustCompile(`^(\S+)\s+(\S.*)$`).FindStringSubmatch(param)
+	subs := twoParams.FindStringSubmatch(param)
 	if subs != nil {
 		self.obj.doc[`uri`] = subs[1]
 		self.obj.doc[`text`] = subs[2]
@@ -693,7 +702,7 @@ func (self *HnfCmd) STRONG(param string) string {
 }
 
 func (self *HnfCmd) SPAN(param string) string {
-	subs := regexp.MustCompile(`^(\S+)\s+(\S.*)$`).FindStringSubmatch(param)
+	subs := twoParams.FindStringSubmatch(param)
 	if subs != nil {
 		self.obj.doc[`class`] = subs[1]
 		self.obj.doc[`text`] = subs[2]
@@ -720,7 +729,7 @@ func (self *HnfCmd) C_FN(param string) string {
 }
 
 func (self *HnfCmd) IMG(param string) string {
-	subs := regexp.MustCompile(`^(\S+)(?:\s+(\S.*))?$`).FindStringSubmatch(param)
+	subs := imgParams.FindStringSubmatch(param)
 	if subs != nil {
 		self.obj.doc[`imgURI`] = subs[1]
 		self.obj.doc[`text`] = subs[2]
@@ -733,7 +742,7 @@ func (self *HnfCmd) IMG(param string) string {
 }
 
 func (self *HnfCmd) LIMG(param string) string {
-	subs := regexp.MustCompile(`^(\S+)(?:\s+(\S+))(?:\s+(\S.*))?$`).FindStringSubmatch(param)
+	subs := limgParams.FindStringSubmatch(param)
 	if subs == nil {
 		return "<font color=red><br>ERROR \"LIMG\" must have 2 param.</font><br>\n"
 	}
@@ -745,7 +754,7 @@ func (self *HnfCmd) LIMG(param string) string {
 }
 
 func (self *HnfCmd) PHOTO(param string) string {
-	subs := regexp.MustCompile(`^(\S+)\s+(\S.*)$`).FindStringSubmatch(param)
+	subs := twoParams.FindStringSubmatch(param)
 	if subs != nil {
 		self.obj.doc[`photoid`] = subs[1]
 		self.obj.doc[`text`] = subs[2]

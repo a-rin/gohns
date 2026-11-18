@@ -2,9 +2,9 @@
 package main
 
 import (
-	"github.com/a-rin/gohns/hns"
 	"fmt"
-	"io/ioutil"
+	"github.com/a-rin/gohns/hns"
+	"io"
 	"log"
 	"net/http"
 	"net/http/httptest"
@@ -24,7 +24,7 @@ func main() {
 		log.Fatal(err)
 	}
 	fmt.Printf("Header:\n%v\n", res.Header)
-	greeting, err := ioutil.ReadAll(res.Body)
+	greeting, err := io.ReadAll(res.Body)
 	res.Body.Close()
 	if err != nil {
 		log.Fatal(err)
