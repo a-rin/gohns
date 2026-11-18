@@ -1,5 +1,7 @@
 # gohns
 
+English | [日本語](README.ja.md)
+
 A Go implementation of the hns renderer, running as CGI or FastCGI.
 
 hns stands for ハイパー日記システム (Hyper Nikki System), and HNF for Hyper Nikki
@@ -150,8 +152,8 @@ go test ./hns/...
 the HTML with `hns/testdata`; the golden files record the current output.
 After a change of the output that you have checked, update them with
 `go test ./hns -update`. There are also tests for a broken configuration, for
-the character sets, for long lines, for a byte order mark, and for concurrent
-requests. Use `-race` for the last one; on FreeBSD ASLR must be off:
+the character sets, for long lines, for a byte order mark, for the alignment of images, for `!` and `URL`, and
+for concurrent requests. Use `-race` for the last one; on FreeBSD ASLR must be off:
 `proccontrol -m aslr -s disable go test -race ./hns/...`.
 
 It was tested on FreeBSD 15.1 with Go 1.27.4, Apache 2.4.71 (`mpm_event`) with
