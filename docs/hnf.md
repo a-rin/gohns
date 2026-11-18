@@ -9,7 +9,7 @@ what `hns/render/render.go` reads, and was checked with the diaries in
 
 The specification of HNF is the page [How to write an hnf](https://web.archive.org/web/20230512122453/http://www.h14m.org/docs/hnf-j.html)
 of the documentation of hns 2.20 (in Japanese). The site of the original hns,
-www.h14m.org, is gone, so the link goes to the Internet Archive. See
+`www.h14m.org`, is gone, so the link goes to the Internet Archive. See
 [Differences from the original](#differences-from-the-original) for where gohns
 does not follow it.
 

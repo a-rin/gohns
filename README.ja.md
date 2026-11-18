@@ -183,7 +183,7 @@ FreeBSD 15.1、Go 1.27.4、Apache 2.4.71(`mpm_event`)、`mod_fcgid` 2.3.9 と
 ## 参考
 
 元の hns は、ハイパー日記システム・プロジェクトの日記システムです。サイト
-(www.h14m.org)はなくなりましたが、次のページが Internet Archive に残っています:
+(`www.h14m.org`)はなくなりましたが、次のページが Internet Archive に残っています:
 
 - [hns 2.20 ユーザーズ・ガイド](https://web.archive.org/web/20230512122453/http://www.h14m.org/docs/)
 - [hnf の記述方法](https://web.archive.org/web/20230512122453/http://www.h14m.org/docs/hnf-j.html)。HNF 形式の仕様
