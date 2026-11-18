@@ -102,6 +102,17 @@ The templates for the diary commands (`New`, `Link`, `Img`, ...) and the
 variables that the program sets (`year`, `month`, `day`, `sec`, `uri`,
 `text`, ...) are those of `sample/config.json` and `hns/render/render.go`.
 
+### Themes
+
+In the original hns, a theme is a directory named by the setting `Theme` (the
+sample has `"Theme": "ice"`). It holds `theme.ph` (a Perl file with the
+templates, the marks and the user variables), images, and optionally `head.txt`
+and `foot.txt`. gohns reads neither `Theme` nor `theme.ph`: the templates are in
+`Tmpl` of the configuration. The files that belong to a theme are still kept in
+a directory of that name: `ice/` of the sample is a theme directory, with a
+style sheet and two parts of the page that `HtmlSeq` includes with
+`StaticFile`.
+
 ## Diary files
 
 The diary of a day is the file `DiaryDir/YYYY/dYYYYMMDD.hnf`, for example
@@ -126,7 +137,8 @@ order is used.
 ## Running it under a web server
 
 - The working directory of the program must be the directory with `config.json`
-  and `ice/` (or whatever the paths in the configuration name). A web server
+  and the theme directory `ice/` (or whatever the paths in the configuration
+  name). A web server
   runs a CGI program and a `mod_fcgid` program in the directory of the program.
 - Put `DiaryDir` outside the document root. `sample/` keeps the diaries inside
   it, for the test, and `sample/.htaccess` refuses `*.json` and `*.hnf`.
