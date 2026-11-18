@@ -1,0 +1,21 @@
+OK
+CAT tech
+NEW Inline commands
+P
+The paragraph. LINK:
+LINK https://example.com/ example link
+STRIKE:
+STRIKE old text
+LSTRIKE:
+LSTRIKE https://example.com/old linked strike
+STRONG:
+STRONG important
+SPAN:
+SPAN note spanned text
+/P
+IMG https://example.com/sample.png sample image
+LIMG https://example.com/ https://example.com/sample.png linked image
+The footnote follows.
+FN
+This is the footnote text.
+/FN

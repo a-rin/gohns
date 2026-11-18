@@ -1,0 +1,5 @@
+OK
+CAT diary
+NEW New Year 2023
+Same month and day as 2024-01-01, to test the month-day query (?0101).~
+It should list both years.
