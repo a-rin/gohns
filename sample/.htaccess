@@ -2,3 +2,8 @@ DirectoryIndex index.fcgi index.html
 <Files "*.json">
  Require all denied
 </Files>
+# The diaries are data for the program, not pages. Better still, put
+# DiaryDir outside the document root.
+<FilesMatch "\.hnf$">
+ Require all denied
+</FilesMatch>
