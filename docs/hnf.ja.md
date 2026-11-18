@@ -8,7 +8,8 @@ gohns は、HNF のうち、よく使う部分だけを実装していて、す�
 
 HNF の仕様は、hns 2.20 のドキュメントの
 [hnf の記述方法](https://web.archive.org/web/20230512122453/http://www.h14m.org/docs/hnf-j.html)
-のページです。gohns が仕様に従っていない点は、
+のページです。元の hns のサイト(www.h14m.org)はなくなっているので、リンクは
+Internet Archive です。gohns が仕様に従っていない点は、
 [元との違い](#元との違い)を見てください。
 
 ## ファイル
