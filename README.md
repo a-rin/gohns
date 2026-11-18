@@ -17,12 +17,12 @@ reads the configuration and the diary files.
 
 ## Programs
 
-| Source | Program | What it is |
+| Directory | Program | What it is |
 |---|---|---|
-| `cgihns.go` | `index.cgi` | CGI program |
-| `fcgihns.go` | `index.fcgi` | FastCGI program (for example for `mod_fcgid`) |
-| `server.go` | | standalone HTTP server on port 12345, for trying it out |
-| `cuihns.go` | | requests `/` once and prints the header and the HTML, for debugging |
+| `cmd/cgihns` | `index.cgi` | CGI program |
+| `cmd/fcgihns` | `index.fcgi` | FastCGI program (for example for `mod_fcgid`) |
+| `cmd/server` | | standalone HTTP server on port 12345, for trying it out |
+| `cmd/cuihns` | | requests `/` once and prints the header and the HTML, for debugging |
 
 All four use the same code in `hns/`.
 
@@ -31,9 +31,9 @@ All four use the same code in `hns/`.
 You need Go (see `go` in `go.mod`). cgo is not needed.
 
 ```sh
-go build -o index.cgi cgihns.go
-go build -o index.fcgi fcgihns.go
-CGO_ENABLED=0 go build -o index.fcgi fcgihns.go   # a static binary
+go build -o index.cgi ./cmd/cgihns
+go build -o index.fcgi ./cmd/fcgihns
+CGO_ENABLED=0 go build -o index.fcgi ./cmd/fcgihns   # a static binary
 ```
 
 `make` builds all four; `server` and `cuihns` are built without optimization
@@ -47,7 +47,7 @@ The dependencies are `github.com/cbroglie/mustache` and `golang.org/x/text`.
 reads its files relative to the working directory, so run it in `sample/`:
 
 ```sh
-go build -o /tmp/gohns-server server.go
+go build -o /tmp/gohns-server ./cmd/server
 cd sample
 /tmp/gohns-server &
 curl 'http://localhost:12345/?202403'

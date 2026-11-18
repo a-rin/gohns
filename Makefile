@@ -6,24 +6,18 @@ HNSSRC = hns/hns.go hns/ghns/ghns.go \
 all:	index.fcgi index.cgi debug server
 
 clean:
-	-rm -f index.fcgi
-	-rm -f index.cgi
-	go clean fcgihns.go
-	go clean cgihns.go
-	go clean cuihns.go
+	-rm -f index.fcgi index.cgi server cuihns
 
+debug:	cuihns
 
-debug:	cuihns 
+server: cmd/server/main.go $(HNSSRC)
+	go build -gcflags "-N -l" -o server ./cmd/server
 
-server: server.go $(HNSSRC)
-	go build -gcflags "-N -l" server.go
+index.fcgi:	cmd/fcgihns/main.go $(HNSSRC)
+	go build -o index.fcgi ./cmd/fcgihns
 
-index.fcgi:	fcgihns.go $(HNSSRC)
-	go build -o index.fcgi fcgihns.go
+index.cgi:	cmd/cgihns/main.go $(HNSSRC)
+	go build -o index.cgi ./cmd/cgihns
 
-index.cgi:	cgihns.go $(HNSSRC)
-	go build -o index.cgi cgihns.go
-
-cuihns:	cuihns.go $(HNSSRC)
-	go build -gcflags "-N -l" cuihns.go
-
+cuihns:	cmd/cuihns/main.go $(HNSSRC)
+	go build -gcflags "-N -l" -o cuihns ./cmd/cuihns

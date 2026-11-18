@@ -17,12 +17,12 @@ gohns は、HNF 形式の日記ファイル(1 日 1 ファイル)を読み、
 
 ## プログラム
 
-| ソース | プログラム | 内容 |
+| ディレクトリ | プログラム | 内容 |
 |---|---|---|
-| `cgihns.go` | `index.cgi` | CGI プログラム |
-| `fcgihns.go` | `index.fcgi` | FastCGI プログラム(たとえば `mod_fcgid` 用) |
-| `server.go` | | ポート 12345 で動く単独の HTTP サーバー。試すためのもの |
-| `cuihns.go` | | `/` を 1 回要求して、ヘッダーと HTML を表示する。デバッグ用 |
+| `cmd/cgihns` | `index.cgi` | CGI プログラム |
+| `cmd/fcgihns` | `index.fcgi` | FastCGI プログラム(たとえば `mod_fcgid` 用) |
+| `cmd/server` | | ポート 12345 で動く単独の HTTP サーバー。試すためのもの |
+| `cmd/cuihns` | | `/` を 1 回要求して、ヘッダーと HTML を表示する。デバッグ用 |
 
 4 つとも、`hns/` の同じコードを使います。
 
@@ -31,9 +31,9 @@ gohns は、HNF 形式の日記ファイル(1 日 1 ファイル)を読み、
 Go が要ります(`go.mod` の `go` を見てください)。cgo は要りません。
 
 ```sh
-go build -o index.cgi cgihns.go
-go build -o index.fcgi fcgihns.go
-CGO_ENABLED=0 go build -o index.fcgi fcgihns.go   # 静的なバイナリ
+go build -o index.cgi ./cmd/cgihns
+go build -o index.fcgi ./cmd/fcgihns
+CGO_ENABLED=0 go build -o index.fcgi ./cmd/fcgihns   # 静的なバイナリ
 ```
 
 `make` は 4 つすべてをビルドします。`server` と `cuihns` は、デバッガを使えるように、
@@ -47,7 +47,7 @@ CGO_ENABLED=0 go build -o index.fcgi fcgihns.go   # 静的なバイナリ
 ディレクトリからの相対でファイルを読むので、`sample/` で実行します:
 
 ```sh
-go build -o /tmp/gohns-server server.go
+go build -o /tmp/gohns-server ./cmd/server
 cd sample
 /tmp/gohns-server &
 curl 'http://localhost:12345/?202403'

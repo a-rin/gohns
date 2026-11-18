@@ -20,7 +20,7 @@ for kind in cgi fcgi; do
 	mkdir -p "$d"
 	tar -C sample -cf - config.json ice diary | tar -C "$d" -xf -
 	sed "s/index.fcgi/index.$kind/" sample/.htaccess > "$d/.htaccess"
-	go build -o "$d/index.$kind" "${kind}hns.go"
+	go build -o "$d/index.$kind" "./cmd/${kind}hns"
 done
 
 trap '"$HTTPD" -f "$CONF" -k stop >/dev/null 2>&1 || true' EXIT
