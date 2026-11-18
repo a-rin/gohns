@@ -732,14 +732,13 @@ func (self *HnfCmd) IMG(param string) string {
 
 func (self *HnfCmd) LIMG(param string) string {
 	subs := regexp.MustCompile(`^(\S+)(?:\s+(\S+))(?:\s+(\S.*))?$`).FindStringSubmatch(param)
-	if subs != nil {
-		self.obj.doc[`imgURI`] = subs[1]
-		self.obj.doc[`text`] = subs[2]
-	} else {
-		self.obj.doc[`imgURI`] = param
-		self.obj.doc[`text`] = ""
+	if subs == nil {
+		return "<font color=red><br>ERROR \"LIMG\" must have 2 param.</font><br>\n"
 	}
-	str, _ := mu.Render((*self.obj.tmpl)[`Img`], self.obj.doc)
+	self.obj.doc[`uri`] = subs[1]
+	self.obj.doc[`imgURI`] = subs[2]
+	self.obj.doc[`text`] = subs[3]
+	str, _ := mu.Render((*self.obj.tmpl)[`LImg`], self.obj.doc)
 	return str
 }
 
