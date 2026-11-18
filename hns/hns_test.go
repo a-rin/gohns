@@ -1,6 +1,8 @@
 package hns_test
 
 import (
+	"bytes"
+	"encoding/hex"
 	"flag"
 	"fmt"
 	"net/http"
@@ -8,6 +10,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"strings"
 	"sync"
 	"testing"
 
@@ -158,5 +161,41 @@ func TestBadConfig(t *testing.T) {
 				t.Errorf("status = %d, want %d", rec.Code, http.StatusInternalServerError)
 			}
 		})
+	}
+}
+
+// TestEUCJPDiary renders a diary file in EUC-JP, the character set of the
+// diaries that this program was written for.
+func TestEUCJPDiary(t *testing.T) {
+	config, err := os.ReadFile("config.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	config = bytes.Replace(config, []byte(`"DiaryCode": "UTF-8"`), []byte(`"DiaryCode": "eucjp"`), 1)
+	title, _ := hex.DecodeString("c6fccbdcb8ec") // 日本語
+	body, _ := hex.DecodeString("cbdccab8")      // 本文
+	diary := append([]byte("OK\nNEW "), title...)
+	diary = append(diary, '\n')
+	diary = append(diary, body...)
+	diary = append(diary, '\n')
+
+	dir := t.TempDir()
+	if err := os.MkdirAll(filepath.Join(dir, "diary", "2024"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	for name, data := range map[string][]byte{
+		"config.json":              config,
+		"diary/2024/d20240101.hnf": diary,
+	} {
+		if err := os.WriteFile(filepath.Join(dir, name), data, 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
+	inDir(t, dir)
+	got := render("?20240101")
+	for _, want := range []string{"日本語", "本文"} {
+		if !strings.Contains(got, want) {
+			t.Errorf("the output does not contain %q", want)
+		}
 	}
 }

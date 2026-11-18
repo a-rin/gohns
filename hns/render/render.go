@@ -186,7 +186,7 @@ func (self *HtmlPartCmd) Diaries() {
 			self.obj.NewFile(ddate)
 			for input.Scan() {
 				dCodeLine := input.Text()
-				line, _ := g.Conv.Conv([]byte(dCodeLine))
+				line, _ := g.Conv.Bytes([]byte(dCodeLine))
 
 				lineStr := string(line[:])
 				subRes := trailingSpace.FindStringSubmatch(lineStr)
@@ -243,7 +243,7 @@ func (self *HtmlPartCmd) ConvFile(params ...string) {
 		input := bufio.NewScanner(file)
 		for input.Scan() {
 			dCodeLine := input.Text()
-			line, _ := g.Conv.Conv([]byte(dCodeLine + "\n"))
+			line, _ := g.Conv.Bytes([]byte(dCodeLine + "\n"))
 			g.Write(line)
 		}
 	} else {
