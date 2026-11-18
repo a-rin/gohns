@@ -6,6 +6,7 @@ import (
 	"github.com/a-rin/gohns/hns/config"
 	g "github.com/a-rin/gohns/hns/ghns"
 	mu "github.com/cbroglie/mustache"
+	"log"
 	"os"
 	"reflect"
 	"regexp"
@@ -27,6 +28,23 @@ var (
 	imgParams     = regexp.MustCompile(`^(\S+)(?:\s+(\S.*))?$`)
 	limgParams    = regexp.MustCompile(`^(\S+)(?:\s+(\S+))(?:\s+(\S.*))?$`)
 )
+
+// newScanner reads lines of up to 1 MB. The default limit is 64 KB, and a
+// longer line ended the reading of the file without a word.
+func newScanner(file *os.File) *bufio.Scanner {
+	s := bufio.NewScanner(file)
+	s.Buffer(nil, 1<<20)
+	return s
+}
+
+// scanError tells that the reading of a file stopped on an error: in the log,
+// and in the page without the name of the file.
+func scanError(name string, err error) {
+	if err != nil {
+		log.Printf("gohns: %s: %v", name, err)
+		GWrite("<!-- read error -->\n")
+	}
+}
 
 type hnfState int
 
@@ -181,14 +199,20 @@ func (self *HtmlPartCmd) Diaries() {
 			//      GWrite(fmt.Sprintf("<!-- Diaries: open %s -->\n", fn))
 			self.obj.state = hsInit
 			//      GWrite("<!-- state = hsInit -->\n")
-			input := bufio.NewScanner(file)
+			input := newScanner(file)
 			ddate := FileNameToDate(fn)
 			self.obj.NewFile(ddate)
+			first := true
 			for input.Scan() {
 				dCodeLine := input.Text()
 				line, _ := g.Conv.Bytes([]byte(dCodeLine))
 
 				lineStr := string(line[:])
+				if first {
+					// a byte order mark, written by some editors, hid the OK line
+					lineStr = strings.TrimPrefix(lineStr, "\ufeff")
+					first = false
+				}
 				subRes := trailingSpace.FindStringSubmatch(lineStr)
 				if subRes != nil {
 					lineStr = subRes[1]
@@ -204,6 +228,7 @@ func (self *HtmlPartCmd) Diaries() {
 					self.obj.nextFn = false
 				}
 			}
+			scanError(fn, input.Err())
 		}
 		GWrite(self.obj.CloseDate())
 		file.Close()
@@ -225,13 +250,14 @@ func (self *HtmlPartCmd) StaticFile(params ...string) {
 	file, err := os.Open(params[0])
 	if err == nil {
 		defer file.Close()
-		input := bufio.NewScanner(file)
+		input := newScanner(file)
 		for input.Scan() {
 			line := input.Text()
 			g.Write([]byte(line + "\n"))
 		}
+		scanError(params[0], input.Err())
 	} else {
-		GWrite("<!-- ConvFile open error: " + params[0] + "-->\n")
+		GWrite("<!-- StaticFile open error: " + params[0] + "-->\n")
 	}
 }
 
@@ -240,12 +266,13 @@ func (self *HtmlPartCmd) ConvFile(params ...string) {
 	file, err := os.Open(params[0])
 	if err == nil {
 		defer file.Close()
-		input := bufio.NewScanner(file)
+		input := newScanner(file)
 		for input.Scan() {
 			dCodeLine := input.Text()
 			line, _ := g.Conv.Bytes([]byte(dCodeLine + "\n"))
 			g.Write(line)
 		}
+		scanError(params[0], input.Err())
 	} else {
 		GWrite("<!-- ConvFile open error: " + params[0] + "-->\n")
 	}

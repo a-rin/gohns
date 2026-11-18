@@ -199,3 +199,52 @@ func TestEUCJPDiary(t *testing.T) {
 		}
 	}
 }
+
+// withDiary runs the rest of a test in a directory that has the config of
+// ../sample and one diary, d20240101.hnf.
+func withDiary(t *testing.T, diary string) {
+	t.Helper()
+	config, err := os.ReadFile(filepath.Join(testdata, "..", "..", "sample", "config.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	dir := t.TempDir()
+	if err := os.MkdirAll(filepath.Join(dir, "diary", "2024"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(dir, "config.json"), config, 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(dir, "diary", "2024", "d20240101.hnf"), []byte(diary), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	inDir(t, dir)
+}
+
+// A line of more than 64 KB used to end the reading of the file: the lines
+// after it were lost.
+func TestLongLine(t *testing.T) {
+	withDiary(t, "OK\nNEW t\n"+strings.Repeat("x", 200000)+"\nafter the long line\n")
+	if got := render("?20240101"); !strings.Contains(got, "after the long line") {
+		t.Error("the line after the long line is missing")
+	}
+}
+
+// A byte order mark before OK used to hide the whole diary.
+func TestByteOrderMark(t *testing.T) {
+	withDiary(t, string([]byte{0xef, 0xbb, 0xbf})+"OK\nNEW t\nbody of the diary\n")
+	if got := render("?20240101"); !strings.Contains(got, "body of the diary") {
+		t.Error("the diary with a byte order mark is empty")
+	}
+}
+
+// Two keys that both select diaries gave a different page on each request,
+// because a map is read in a random order.
+func TestQueryOrder(t *testing.T) {
+	first := render("?0101&202403")
+	for i := 0; i < 30; i++ {
+		if render("?0101&202403") != first {
+			t.Fatal("the same query gave different pages")
+		}
+	}
+}

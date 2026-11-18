@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"sort"
 	"sync"
 	"time"
 	//    "fmt"
@@ -98,7 +99,14 @@ func handle(w http.ResponseWriter, r *http.Request) {
 
 	doneCollect := false
 	titleF := false
-	for qVar, _ := range qStrings {
+	// A map is read in a random order, so two keys that both select diaries
+	// (?0101&202403) gave a different page on each request: take them in order.
+	keys := make([]string, 0, len(qStrings))
+	for k := range qStrings {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	for _, qVar := range keys {
 		//      g.Write([]byte(fmt.Sprintf("<!--\n%v: %v\n-->\n", qVar, qVal)))
 		if !doneCollect {
 			subs := ymQuery.FindStringSubmatch(qVar)
