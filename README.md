@@ -2,6 +2,10 @@
 
 A Go implementation of the hns renderer, running as CGI or FastCGI.
 
+hns stands for ハイパー日記システム (Hyper Nikki System). gohns implements the
+commonly used part of the HNF format, not all of it: see [docs/hnf.md](docs/hnf.md)
+for what it reads.
+
 gohns reads diary files in the HNF format, one file per day, and renders them
 as HTML pages with [mustache](https://github.com/cbroglie/mustache) templates.
 Which days are shown is chosen by the query string of the URL (`?202403`,
@@ -154,6 +158,8 @@ It was tested on FreeBSD 15.1 with Go 1.27.4, Apache 2.4.71 (`mpm_event`) with
 
 ## Limits
 
+- Only the commonly used part of HNF is implemented. A command that is not in
+  [docs/hnf.md](docs/hnf.md) gives `ERROR NAME is not implemented` in the page.
 - One request is handled at a time (the state of a request is kept in package
   variables). Rendering takes a few milliseconds.
 - The URLs in templates and diaries are not escaped (`{{{uri}}}`). Only write

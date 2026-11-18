@@ -1,7 +1,9 @@
 # The HNF format as gohns reads it
 
-This describes what `hns/render/render.go` does, and was checked with the
-diaries in `sample/diary`.
+gohns implements the commonly used part of HNF, not all of it. This describes
+what `hns/render/render.go` reads, and was checked with the diaries in
+`sample/diary`. A command that is not listed here gives
+`ERROR NAME is not implemented` in the page.
 
 ## Files
 
