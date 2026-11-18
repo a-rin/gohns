@@ -1,8 +1,10 @@
 package hns
 
 import (
+	"bytes"
 	"net/http"
 	"net/url"
+	"sync"
 	"time"
 	//    "fmt"
 	"github.com/a-rin/gohns/hns/collector"
@@ -27,7 +29,46 @@ func (self *TextProcType) OpenSec(_ string) {
 func (self *TextProcType) CloseSec() {
 }
 
+// mu lets one request run at a time: the state of a request is kept in the
+// package variables of ghns (Config, Conv, Write and StartTime).
+// ponytail: no parallel requests. Rendering takes milliseconds, which is
+// enough for a personal diary. To serve requests in parallel, move that state
+// into a value that is made per request and passed to render and collector.
+var mu sync.Mutex
+
+// response keeps the output of one request, so that mu is not held while a
+// slow client reads it.
+type response struct {
+	header http.Header
+	status int
+	body   bytes.Buffer
+}
+
+func (res *response) Header() http.Header         { return res.header }
+func (res *response) Write(p []byte) (int, error) { return res.body.Write(p) }
+func (res *response) WriteHeader(code int) {
+	if res.status == 0 {
+		res.status = code
+	}
+}
+
 func Handler(w http.ResponseWriter, r *http.Request) {
+	res := &response{header: http.Header{}}
+	func() {
+		mu.Lock()
+		defer mu.Unlock()
+		handle(res, r)
+	}()
+	for k, v := range res.header {
+		w.Header()[k] = v
+	}
+	if res.status != 0 {
+		w.WriteHeader(res.status)
+	}
+	w.Write(res.body.Bytes())
+}
+
+func handle(w http.ResponseWriter, r *http.Request) {
 	var dfiles []string
 	var recentF = true
 	g.Write = nil

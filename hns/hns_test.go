@@ -2,10 +2,12 @@ package hns_test
 
 import (
 	"flag"
+	"fmt"
 	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"regexp"
+	"sync"
 	"testing"
 
 	"github.com/a-rin/gohns/hns"
@@ -32,27 +34,40 @@ var cases = []struct{ name, query string }{
 	{"recent_cat_diary", "?CAT=diary"},
 }
 
+var testdata string
+
+// The config and the diaries are read relative to the working directory,
+// so every test runs in ../sample. Tests that use it must not run in parallel
+// with each other, but the handler itself is called concurrently below.
+func TestMain(m *testing.M) {
+	wd, err := os.Getwd()
+	if err == nil {
+		testdata = filepath.Join(wd, "testdata")
+		err = os.Chdir(filepath.Join(wd, "..", "sample"))
+	}
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+	os.Exit(m.Run())
+}
+
+func render(query string) string {
+	rec := httptest.NewRecorder()
+	hns.Handler(rec, httptest.NewRequest("GET", "/"+query, nil))
+	return procTime.ReplaceAllString(rec.Body.String(), "<hr>TIME<br>")
+}
+
 // TestHandlerGolden renders the diaries in ../sample and compares the HTML
 // with testdata. Run "go test ./hns -update" to regenerate testdata after
 // a change in the output that you have checked by hand.
 func TestHandlerGolden(t *testing.T) {
-	wd, err := os.Getwd()
-	if err != nil {
-		t.Fatal(err)
-	}
-	// The config and the diaries are read relative to the working directory.
-	if err := os.Chdir(filepath.Join(wd, "..", "sample")); err != nil {
-		t.Fatal(err)
-	}
-	defer os.Chdir(wd)
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
-			rec := httptest.NewRecorder()
-			hns.Handler(rec, httptest.NewRequest("GET", "/"+c.query, nil))
-			got := procTime.ReplaceAllString(rec.Body.String(), "<hr>TIME<br>")
-			golden := filepath.Join(wd, "testdata", c.name+".html")
+			got := render(c.query)
+			golden := filepath.Join(testdata, c.name+".html")
 			if *update {
-				if err := os.MkdirAll(filepath.Dir(golden), 0o775); err != nil {
+				if err := os.MkdirAll(testdata, 0o775); err != nil {
 					t.Fatal(err)
 				}
 				if err := os.WriteFile(golden, []byte(got), 0o664); err != nil {
@@ -69,4 +84,41 @@ func TestHandlerGolden(t *testing.T) {
 			}
 		})
 	}
+}
+
+// TestHandlerConcurrent sends the same queries from several goroutines, as a
+// FastCGI server does, and expects the same output as TestHandlerGolden.
+// Run it with -race.
+func TestHandlerConcurrent(t *testing.T) {
+	if *update {
+		t.Skip("updating")
+	}
+	want := map[string]string{}
+	for _, c := range cases {
+		b, err := os.ReadFile(filepath.Join(testdata, c.name+".html"))
+		if err != nil {
+			t.Fatal(err)
+		}
+		want[c.name] = string(b)
+	}
+	var wg sync.WaitGroup
+	for i := 0; i < 8; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for _, c := range cases {
+				func() {
+					defer func() {
+						if r := recover(); r != nil {
+							t.Errorf("%q: panic: %v", c.query, r)
+						}
+					}()
+					if got := render(c.query); got != want[c.name] {
+						t.Errorf("%q: output differs", c.query)
+					}
+				}()
+			}
+		}()
+	}
+	wg.Wait()
 }
