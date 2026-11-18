@@ -4,6 +4,7 @@ NEW Inline commands
 P
 The paragraph. LINK:
 LINK https://example.com/ example link
+URL https://example.com/ the example site
 STRIKE:
 STRIKE old text
 LSTRIKE:
@@ -15,6 +16,10 @@ SPAN note spanned text
 /P
 IMG https://example.com/sample.png sample image
 LIMG https://example.com/ https://example.com/sample.png linked image
+IMG r https://example.com/sample.png image on the right
+IMG l https://example.com/sample.png image on the left
+IMG n https://example.com/sample.png image without alignment
+LIMG https://example.com/ r https://example.com/sample.png linked image on the right
 The footnote follows.
 FN
 This is the footnote text.

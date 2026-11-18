@@ -64,6 +64,7 @@
     "OpenSub": "<div class=\"sub\">\n",
     "CloseSub": "</div><!-- class subsec -->\n",
     "Link": "<a href=\"{{{uri}}}\">{{text}}</a>\n",
+    "Url": "<a href=\"{{{uri}}}\">{{text}}({{uri}})</a>\n",
     "P": "<p>\n",
     "_P": "</p>\n",
     "Cite": "<cite>\n",
@@ -90,8 +91,8 @@
     "FnProcOpen": "<hr><div class=\"fn\">\n",
     "FnProcClose": "</div><!-- fn -->\n",
     "FnProc": "<a id=\"{{year}}{{month}}{{day}}{{secno}}F{{fnno}}\" href=\"?{{year}}{{month}}#{{year}}{{month}}{{day}}{{secno}}F{{fnno}}\">*{{fnno}}</a>:{{{text}}}<br>\n",
-    "Img": "<img src=\"{{{imgURI}}}\" alt=\"{{text}}\">",
-    "LImg": "<a href=\"{{{uri}}}\"><img src=\"{{{imgURI}}}\" alt=\"{{text}}\"></a>",
+    "Img": "<img src=\"{{{imgURI}}}\" alt=\"{{text}}\"{{#align}} class=\"align-{{align}}\"{{/align}}>",
+    "LImg": "<a href=\"{{{uri}}}\"><img src=\"{{{imgURI}}}\" alt=\"{{text}}\"{{#align}} class=\"align-{{align}}\"{{/align}}></a>",
     "Ads": ""
   },
   "TitleHtmlSeq": [

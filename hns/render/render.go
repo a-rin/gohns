@@ -27,6 +27,8 @@ var (
 	twoParams     = regexp.MustCompile(`^(\S+)\s+(\S.*)$`)
 	imgParams     = regexp.MustCompile(`^(\S+)(?:\s+(\S.*))?$`)
 	limgParams    = regexp.MustCompile(`^(\S+)(?:\s+(\S+))(?:\s+(\S.*))?$`)
+	imgAlign      = regexp.MustCompile(`^([rln])\s+(\S+)(?:\s+(\S.*))?$`)
+	limgAlign     = regexp.MustCompile(`^(\S+)\s+([rln])\s+(\S+)(?:\s+(\S.*))?$`)
 )
 
 // newScanner reads lines of up to 1 MB. The default limit is 64 KB, and a
@@ -625,6 +627,23 @@ func (self *HnfCmd) LINK(param string) string {
 	}
 }
 
+// URL url text is a link that shows the url, by the template Url. A config
+// from before this command has no such template: use Link.
+func (self *HnfCmd) URL(param string) string {
+	subs := twoParams.FindStringSubmatch(param)
+	if subs == nil {
+		return "<font color=red><br>ERROR \"URL\" must have 2 param.</font><br>\n"
+	}
+	self.obj.doc[`uri`] = subs[1]
+	self.obj.doc[`text`] = subs[2]
+	tmpl := (*self.obj.tmpl)[`Url`]
+	if tmpl == "" {
+		tmpl = (*self.obj.tmpl)[`Link`]
+	}
+	str, _ := mu.Render(tmpl, self.obj.doc)
+	return str
+}
+
 func (self *HnfCmd) STRIKE(param string) string {
 	self.obj.doc[`text`] = param
 	str, _ := mu.Render((*self.obj.tmpl)[`Strike`], self.obj.doc)
@@ -740,8 +759,16 @@ func (self *HnfCmd) SPAN(param string) string {
 	}
 }
 
+// Comment is a line that starts with !. It is written by the template Comment
+// (<!--{{text}}--> in the sample), so a site that does not want its notes in
+// the page makes that template empty. A line that starts with !# is never
+// written.
 func (self *RenderObj) Comment(str string) string {
-	var res string
+	if strings.HasPrefix(str, "#") {
+		return ""
+	}
+	self.doc[`text`] = str
+	res, _ := mu.Render((*self.tmpl)[`Comment`], self.doc)
 	return res
 }
 
@@ -755,9 +782,18 @@ func (self *HnfCmd) C_FN(param string) string {
 	return self.obj.CloseFn()
 }
 
+// alignNames are the values of the template variable align for the words r, l
+// and n of IMG and LIMG.
+var alignNames = map[string]string{"r": "right", "l": "left", "n": ""}
+
+// IMG {r|l|n} file [alt], as in the original hns, or IMG file [alt].
 func (self *HnfCmd) IMG(param string) string {
-	subs := imgParams.FindStringSubmatch(param)
-	if subs != nil {
+	self.obj.doc[`align`] = ""
+	if subs := imgAlign.FindStringSubmatch(param); subs != nil {
+		self.obj.doc[`align`] = alignNames[subs[1]]
+		self.obj.doc[`imgURI`] = subs[2]
+		self.obj.doc[`text`] = subs[3]
+	} else if subs := imgParams.FindStringSubmatch(param); subs != nil {
 		self.obj.doc[`imgURI`] = subs[1]
 		self.obj.doc[`text`] = subs[2]
 	} else {
@@ -768,14 +804,21 @@ func (self *HnfCmd) IMG(param string) string {
 	return str
 }
 
+// LIMG url {r|l|n} file [alt], as in the original hns, or LIMG url file [alt].
 func (self *HnfCmd) LIMG(param string) string {
-	subs := limgParams.FindStringSubmatch(param)
-	if subs == nil {
+	self.obj.doc[`align`] = ""
+	if subs := limgAlign.FindStringSubmatch(param); subs != nil {
+		self.obj.doc[`uri`] = subs[1]
+		self.obj.doc[`align`] = alignNames[subs[2]]
+		self.obj.doc[`imgURI`] = subs[3]
+		self.obj.doc[`text`] = subs[4]
+	} else if subs := limgParams.FindStringSubmatch(param); subs != nil {
+		self.obj.doc[`uri`] = subs[1]
+		self.obj.doc[`imgURI`] = subs[2]
+		self.obj.doc[`text`] = subs[3]
+	} else {
 		return "<font color=red><br>ERROR \"LIMG\" must have 2 param.</font><br>\n"
 	}
-	self.obj.doc[`uri`] = subs[1]
-	self.obj.doc[`imgURI`] = subs[2]
-	self.obj.doc[`text`] = subs[3]
 	str, _ := mu.Render((*self.obj.tmpl)[`LImg`], self.obj.doc)
 	return str
 }

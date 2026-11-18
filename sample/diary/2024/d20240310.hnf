@@ -19,5 +19,6 @@ DD description
 DIV note
 Text inside a DIV.
 /DIV
-! This comment line must not appear in the output.
+! This note is written as an HTML comment, by the template Comment.
+!# This note is not written at all.
 Special characters: 1 < 2 & 3 > 2 "quoted"

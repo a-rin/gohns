@@ -24,3 +24,6 @@ div.sub { margin-left: 1em; }
 div.fn { margin-left: 1em; }
 div.entry { margin-left: 0; }
 div.subentry { margin-left: 2em; }
+img.align-right { float: right; margin: 0 0 0.5em 1em; }
+img.align-left { float: left; margin: 0 1em 0.5em 0; }
+div.datebody::after { content: ""; display: block; clear: both; }

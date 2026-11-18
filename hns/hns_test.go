@@ -3,6 +3,7 @@ package hns_test
 import (
 	"bytes"
 	"encoding/hex"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"net/http"
@@ -204,9 +205,25 @@ func TestEUCJPDiary(t *testing.T) {
 // ../sample and one diary, d20240101.hnf.
 func withDiary(t *testing.T, diary string) {
 	t.Helper()
+	withDiaryConfig(t, diary, nil)
+}
+
+// withDiaryConfig is withDiary, with a change of the templates of the config.
+func withDiaryConfig(t *testing.T, diary string, edit func(tmpl map[string]any)) {
+	t.Helper()
 	config, err := os.ReadFile(filepath.Join(testdata, "..", "..", "sample", "config.json"))
 	if err != nil {
 		t.Fatal(err)
+	}
+	if edit != nil {
+		var c map[string]any
+		if err := json.Unmarshal(config, &c); err != nil {
+			t.Fatal(err)
+		}
+		edit(c["Tmpl"].(map[string]any))
+		if config, err = json.Marshal(c); err != nil {
+			t.Fatal(err)
+		}
 	}
 	dir := t.TempDir()
 	if err := os.MkdirAll(filepath.Join(dir, "diary", "2024"), 0o755); err != nil {
@@ -246,5 +263,65 @@ func TestQueryOrder(t *testing.T) {
 		if render("?0101&202403") != first {
 			t.Fatal("the same query gave different pages")
 		}
+	}
+}
+
+// IMG {r|l|n} file [alt] and LIMG url {r|l|n} file [alt] are the forms of the
+// original hns; the forms without the alignment word are kept.
+func TestImageAlign(t *testing.T) {
+	for _, c := range []struct{ line, want string }{
+		{"IMG r a.png alt text", `<img src="a.png" alt="alt text" class="align-right">`},
+		{"IMG l a.png alt", `<img src="a.png" alt="alt" class="align-left">`},
+		{"IMG l a.png", `<img src="a.png" alt="" class="align-left">`},
+		{"IMG n a.png alt", `<img src="a.png" alt="alt">`},
+		{"IMG a.png alt", `<img src="a.png" alt="alt">`},
+		{"IMG a.png", `<img src="a.png" alt="">`},
+		{"LIMG http://x/ r a.png alt", `<a href="http://x/"><img src="a.png" alt="alt" class="align-right"></a>`},
+		{"LIMG http://x/ n a.png alt", `<a href="http://x/"><img src="a.png" alt="alt"></a>`},
+		{"LIMG http://x/ a.png alt", `<a href="http://x/"><img src="a.png" alt="alt"></a>`},
+		// the alignment of one image must not stay for the next
+		{"IMG r a.png x\nIMG b.png y", `<img src="b.png" alt="y">`},
+	} {
+		withDiary(t, "OK\nNEW t\n"+c.line+"\n")
+		if got := render("?20240101"); !strings.Contains(got, c.want) {
+			t.Errorf("%q: the page does not contain %s", c.line, c.want)
+		}
+	}
+}
+
+// ! is written by the template Comment, !# never.
+func TestComments(t *testing.T) {
+	withDiary(t, "OK\nNEW t\n! a visible note\n!# a hidden note\n! a --> <script>x</script>\n")
+	got := render("?20240101")
+	if !strings.Contains(got, "<!-- a visible note-->") {
+		t.Error("the note of ! is not written as a comment")
+	}
+	if strings.Contains(got, "hidden note") {
+		t.Error("the note of !# is written")
+	}
+	if !strings.Contains(got, "a --&gt; &lt;script&gt;x&lt;/script&gt;") {
+		t.Error("the text of a comment is not escaped")
+	}
+	// the config of a site that keeps its notes private
+	withDiaryConfig(t, "OK\nNEW t\n! a visible note\n", func(tmpl map[string]any) { tmpl["Comment"] = "" })
+	if strings.Contains(render("?20240101"), "visible note") {
+		t.Error("a note is written although the template Comment is empty")
+	}
+}
+
+// URL url text is a link that shows the url.
+func TestURL(t *testing.T) {
+	withDiary(t, "OK\nNEW t\nURL http://x/ some text\nURL onlyone\n")
+	got := render("?20240101")
+	if !strings.Contains(got, `<a href="http://x/">some text(http://x/)</a>`) {
+		t.Error("URL does not write the link with the url")
+	}
+	if !strings.Contains(got, `ERROR "URL" must have 2 param.`) {
+		t.Error("URL without a text is not an error")
+	}
+	// a config from before URL, without the template Url, uses the template Link
+	withDiaryConfig(t, "OK\nNEW t\nURL http://x/ some text\n", func(tmpl map[string]any) { delete(tmpl, "Url") })
+	if !strings.Contains(render("?20240101"), `<a href="http://x/">some text</a>`) {
+		t.Error("URL does not use the template Link when there is no template Url")
 	}
 }

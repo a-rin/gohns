@@ -2,9 +2,10 @@
 
 A Go implementation of the hns renderer, running as CGI or FastCGI.
 
-hns stands for ハイパー日記システム (Hyper Nikki System). gohns implements the
-commonly used part of the HNF format, not all of it: see [docs/hnf.md](docs/hnf.md)
-for what it reads.
+hns stands for ハイパー日記システム (Hyper Nikki System), and HNF for Hyper Nikki
+File (ハイパー日記ファイル). gohns implements the commonly used part of the HNF
+format, not all of it: see [docs/hnf.md](docs/hnf.md) for what it reads and how
+it differs from the original.
 
 gohns reads diary files in the HNF format, one file per day, and renders them
 as HTML pages with [mustache](https://github.com/cbroglie/mustache) templates.
@@ -167,6 +168,14 @@ It was tested on FreeBSD 15.1 with Go 1.27.4, Apache 2.4.71 (`mpm_event`) with
 - Any HTTP method gets the page.
 - The decoders for Shift_JIS and ISO-2022-JP were not compared with `iconv`;
   those for EUC-JP were, and they are the same.
+
+## References
+
+The original hns is a diary system of the ハイパー日記システム・プロジェクト.
+Its site, www.h14m.org, is gone; these pages are in the Internet Archive:
+
+- [hns 2.20 user guide](https://web.archive.org/web/20230512122453/http://www.h14m.org/docs/) (in Japanese)
+- [How to write an hnf](https://web.archive.org/web/20230512122453/http://www.h14m.org/docs/hnf-j.html) (in Japanese), the specification of the HNF format
 
 ## License
 
